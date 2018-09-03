@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { ClipLoader } from "react-spinners";
 import { getImages } from "../actions/searchActions";
 
-const API_KEY = "d5a0f33900852e696aa51e4cdbadc159";
 class HomePage extends Component {
   constructor(props) {
     super(props);
@@ -35,14 +34,12 @@ class HomePage extends Component {
     });
   };
   onSubmit = event => {
-    console.log("SUBMIT SEARCH", this.state.search);
     let value = this.state.search;
     this.props.getImages(value);
     this.setState({ updated: true, photoTitle: value });
     event.preventDefault();
   };
   render() {
-    console.log("REBBDE", this.state.updated, process.env.REACT_APP_API_KEY);
     return (
       <div className="container">
         <div className="search-container">
