@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import axios from "axios";
 import "../styles/HomePage.css";
 import { connect } from "react-redux";
+import { ClipLoader } from "react-spinners";
 import { getImages } from "../actions/searchActions";
 
 const API_KEY = "d5a0f33900852e696aa51e4cdbadc159";
@@ -10,36 +10,26 @@ class HomePage extends Component {
     super(props);
     this.state = {
       search: "",
-      data: []
+      data: [],
+      loading: true,
+      updated: false,
+      photoTitle: ""
     };
   }
   componentDidMount() {
-    console.log(this.props);
     let value = "ocean";
     this.props.getImages(value);
-    const url = `https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&api_key=d5a0f33900852e696aa51e4cdbadc159&tag=${value}&format=json&nojsoncallback=1`;
-    axios
-      .get(url, {
-        responseType: "json"
-      })
-      .then(
-        function(response) {
-          console.log("Submit Success", response);
-          if (response) {
-            console.log("SUCCESS RES");
-            this.setState({
-              data: response.data.photos.photo
-            });
-          }
-        }.bind(this)
-      )
-
-      .catch(function(error) {
-        console.log(error);
+  }
+  componentWillReceiveProps(nextProps) {
+    console.log("RECEIVED PROPS");
+    const { photo } = nextProps.state.photos;
+    if (nextProps) {
+      this.setState({
+        data: photo
       });
+    }
   }
   handleChange = event => {
-    console.log(event.target.value);
     this.setState({
       search: event.target.value
     });
@@ -47,34 +37,22 @@ class HomePage extends Component {
   onSubmit = event => {
     console.log("SUBMIT SEARCH", this.state.search);
     let value = this.state.search;
-    const url = `https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&api_key=d5a0f33900852e696aa51e4cdbadc159&tag=${value}&format=json&nojsoncallback=1`;
-    axios
-      .get(url, {
-        responseType: "json"
-      })
-      .then(
-        function(response) {
-          console.log("Submit Success", response);
-          if (response) {
-            console.log("SUCCESS RES");
-            this.setState({
-              data: response.data.photos.photo
-            });
-          }
-        }.bind(this)
-      )
-
-      .catch(function(error) {
-        console.log(error);
-      });
+    this.props.getImages(value);
+    this.setState({ updated: true, photoTitle: value });
     event.preventDefault();
   };
   render() {
-    console.log("render", this.state.data, this.state.data.length);
+    console.log("REBBDE", this.state.updated, process.env.REACT_APP_API_KEY);
     return (
       <div className="container">
         <div className="search-container">
-          <h1 className="home-page-title">Flicker App</h1>
+          <h1 className="home-page-title">
+            {this.state.updated === false
+              ? "Flicker App"
+              : this.state.photoTitle.charAt(0).toUpperCase() +
+                this.state.photoTitle.slice(1) +
+                " Photos"}
+          </h1>
           <h1 className="home-page-description">Amazing photos.</h1>
           <h1 className="home-page-description">
             Find something inspiring from our community.
@@ -90,33 +68,28 @@ class HomePage extends Component {
           </form>
         </div>
         <div className="tag-section">
-          {this.state.data.length > 0
-            ? this.state.data.map(item => {
-                return (
-                  <div className="tag-container">
-                    <img
-                      src={`https://farm${item.farm}.staticflickr.com/${
-                        item.server
-                      }/${item.id}_${item.secret}.jpg`}
-                      alt="No image found"
-                      className="img-responsive"
-                    />
-                  </div>
-                );
-              })
-            : this.state.data.map(item => {
-                return (
-                  <div className="tag-container">
-                    <img
-                      src={`https://farm${item.farm}.staticflickr.com/${
-                        item.server
-                      }/${item.id}_${item.secret}.jpg`}
-                      alt="No image found"
-                      className="img-responsive"
-                    />
-                  </div>
-                );
-              })}
+          {this.state.data.length > 0 ? (
+            this.state.data.map((item, i) => {
+              return (
+                <div className="tag-container" key={i}>
+                  <img
+                    src={`https://farm${item.farm}.staticflickr.com/${
+                      item.server
+                    }/${item.id}_${item.secret}.jpg`}
+                    alt="No image found"
+                    className="img-responsive"
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <ClipLoader
+              sizeUnit={"px"}
+              size={100}
+              color={"#FFF"}
+              loading={this.state.loading}
+            />
+          )}
         </div>
       </div>
     );
@@ -124,7 +97,7 @@ class HomePage extends Component {
 }
 const mapStateToProps = state => {
   return {
-    state
+    state: state.data
   };
 };
 export default connect(

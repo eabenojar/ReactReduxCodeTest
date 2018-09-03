@@ -7,10 +7,11 @@ import {
 import axios from "axios";
 
 export const getImages = value => dispatch => {
-  console.log("INSIDE GET ACTIONS");
   axios
     .get(
-      `https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&api_key=d5a0f33900852e696aa51e4cdbadc159&tag=${value}&format=json&nojsoncallback=1`
+      `https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&api_key=${
+        process.env.REACT_APP_API_KEY
+      }&tag=${value}&format=json&nojsoncallback=1`
     )
     .then(res => {
       console.log("SUCCESS FROM ACTIONS", res);
