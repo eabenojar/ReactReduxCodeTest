@@ -18,7 +18,7 @@ export const getImages = value => dispatch => {
     .catch(err => {
       dispatch({
         type: FETCH_SEARCH_ERROR,
-        payload: "Error"
+        payload: "Error Found"
       });
     });
 };
