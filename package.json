@@ -5,6 +5,10 @@
   "devDependencies": {
     "react-scripts": "1.1.5"
   },
+  "engines": {
+    "npm": "6.3.0",
+    "node": "8.11.2"
+  },
   "dependencies": {
     "axios": "^0.18.0",
     "react": "^16.4.2",

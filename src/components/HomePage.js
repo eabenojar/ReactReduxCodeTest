@@ -12,7 +12,10 @@ class HomePage extends Component {
       data: [],
       loading: true,
       updated: false,
-      photoTitle: ""
+      photoTitle: "",
+      inValidSearch: false,
+      success: false,
+      error: false
     };
   }
   componentDidMount() {
@@ -20,23 +23,33 @@ class HomePage extends Component {
     this.props.getImages(value);
   }
   componentWillReceiveProps(nextProps) {
-    console.log("RECEIVED PROPS");
-    const { photo } = nextProps.state.photos;
-    if (nextProps) {
+    if (nextProps.state.stat === "ok") {
+      const { photo } = nextProps.state.photos;
       this.setState({
-        data: photo
+        data: photo,
+        success: true
+      });
+    } else {
+      this.setState({
+        error: true
       });
     }
   }
   handleChange = event => {
     this.setState({
-      search: event.target.value
+      search: event.target.value,
+      inValidSearch: false
     });
   };
   onSubmit = event => {
     let value = this.state.search;
-    this.props.getImages(value);
-    this.setState({ updated: true, photoTitle: value });
+    if (value.length > 0) {
+      this.props.getImages(value);
+      this.setState({ updated: true, photoTitle: value });
+    } else {
+      this.setState({ inValidSearch: true });
+    }
+
     event.preventDefault();
   };
   render() {
@@ -58,7 +71,11 @@ class HomePage extends Component {
             <input
               type="text"
               name="Search"
-              placeholder="Search photos"
+              placeholder={
+                this.state.inValidSearch
+                  ? "Please enter a valid search term"
+                  : "Search photos"
+              }
               onChange={this.handleChange}
               id="search-input"
             />
@@ -79,13 +96,17 @@ class HomePage extends Component {
                 </div>
               );
             })
-          ) : (
+          ) : this.state.success && this.state.data.length === 0 ? (
+            <h1 className="home-page-title">No Images Found</h1>
+          ) : !this.state.error ? (
             <ClipLoader
               sizeUnit={"px"}
               size={100}
               color={"#FFF"}
               loading={this.state.loading}
             />
+          ) : (
+            <h1 className="home-page-title">Error</h1>
           )}
         </div>
       </div>

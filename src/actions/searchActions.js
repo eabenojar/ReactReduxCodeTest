@@ -1,8 +1,4 @@
-import {
-  FETCH_SEARCH_REQUEST,
-  FETCH_SEARCH_FAILURE,
-  FETCH_SEARCH_SUCCESS
-} from "./actionTypes";
+import { FETCH_SEARCH_REQUEST, FETCH_SEARCH_ERROR } from "./actionTypes";
 
 import axios from "axios";
 
@@ -14,7 +10,6 @@ export const getImages = value => dispatch => {
       }&tag=${value}&format=json&nojsoncallback=1`
     )
     .then(res => {
-      console.log("SUCCESS FROM ACTIONS", res);
       dispatch({
         type: FETCH_SEARCH_REQUEST,
         payload: res.data
@@ -22,8 +17,8 @@ export const getImages = value => dispatch => {
     })
     .catch(err => {
       dispatch({
-        // type: GET_ERRORS,
-        payload: err.response.data
+        type: FETCH_SEARCH_ERROR,
+        payload: "Error"
       });
     });
 };
