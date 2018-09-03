@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axios from "axios";
 import "../styles/HomePage.css";
+import { connect } from "react-redux";
+import { getImages } from "../actions/searchActions";
 
 const API_KEY = "d5a0f33900852e696aa51e4cdbadc159";
 class HomePage extends Component {
@@ -12,8 +14,9 @@ class HomePage extends Component {
     };
   }
   componentDidMount() {
-    console.log("MOUNTED!");
+    console.log(this.props);
     let value = "ocean";
+    this.props.getImages(value);
     const url = `https://api.flickr.com/services/rest/?method=flickr.tags.getClusterPhotos&api_key=d5a0f33900852e696aa51e4cdbadc159&tag=${value}&format=json&nojsoncallback=1`;
     axios
       .get(url, {
@@ -21,7 +24,6 @@ class HomePage extends Component {
       })
       .then(
         function(response) {
-          // var obj = JSON.parse(response.data);
           console.log("Submit Success", response);
           if (response) {
             console.log("SUCCESS RES");
@@ -52,7 +54,6 @@ class HomePage extends Component {
       })
       .then(
         function(response) {
-          // var obj = JSON.parse(response.data);
           console.log("Submit Success", response);
           if (response) {
             console.log("SUCCESS RES");
@@ -121,6 +122,12 @@ class HomePage extends Component {
     );
   }
 }
-{
-}
-export default HomePage;
+const mapStateToProps = state => {
+  return {
+    state
+  };
+};
+export default connect(
+  mapStateToProps,
+  { getImages }
+)(HomePage);
